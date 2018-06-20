@@ -8,7 +8,8 @@
 #DONE 12/21/2017 - add case insensitive
 #DONE 01/05/2018 - add search sub-directories
 #DONE 01/05/2018 - add command line argument for starting directory
-#TODO add print file details size, date, permissions command line argument
+#TODO add print file details size, modify date, permissions command line argument
+#DONE 06/13/2018 - print file size in human readable format rounded to two decimal places
 #NOT NEEDED BASH CAN DO THIS - add command line argument to open file using default application
 #DONE 01/08/2018 - cleanup printout is bit messy
 #DONE 02/19/2018 - BUG: When using the specify directory command line argument the print on screen has an extra '/' appended to the output
@@ -63,7 +64,26 @@ def searchCurrentDirectoryOnly(searchString):
         print('Try searching sub directories with -s or --sub\n')
         print('Usage: searchProgram.py [searchTerm] [arguments]')
 
-
+#define function to return size of a file in a human readable string
+#fileLocation is assumed to be a string of the full path and filename
+def getFileSize(fileLocation):
+    fileSize=os.path.getsize(fileLocation)
+    if fileSize < 1000:
+        return str(fileSize)+'B'
+    elif fileSize < 1000000:
+        fileSize = round(fileSize/1000,2)
+        return str(fileSize)+'kB'
+    elif fileSize < 1000000000:
+        fileSize = round(fileSize/1000000,2)
+        return str(fileSize)+'MB'
+    elif fileSize < 1000000000000:
+        fileSize = round(fileSize/1000000000,2)
+        return str(fileSize)+'GB'
+    elif fileSize < 1000000000000000:
+        fileSize = round(fileSize/1000000000000,2)
+        return str(fileSize)+'TB'
+    else:
+        return 'HUGE FILE'
 
 def searchDirectory(startPoint, searchString):
 #    print('Starting in: '+startPoint)
@@ -80,7 +100,10 @@ def searchDirectory(startPoint, searchString):
             searchDirectory(startPoint+'/'+fileName, searchString)
         elif searchString in fileName.lower():
 #            print('File: '+fileName+'     in '+startPoint)
-            print('Fil: '+startPoint+'/'+fileName)
+#            print('Fil: '+startPoint+'/'+fileName)
+#            size=os.path.getsize(os.path.join(startPoint,fileName))
+            size=getFileSize(os.path.join(startPoint,fileName))
+            print(size,'File: '+startPoint+'/'+fileName)
 
 text = sys.argv[1].lower()
 
